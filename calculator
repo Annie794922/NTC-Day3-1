@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="https://unpkg.com/vue@3"></script>
+    <div id="app">
+        <header>Simple Cauculator</header>
+        <div>{{ initValue }}</div>
+        <div>
+            <!-- 以for迴圈的方式把數字1-9加進按鈕裡 -->
+            <template v-for="num in 9">
+                <button @click="addNum(num)">{{ num }}</button>
+            </template>
+            <!-- 再另外單獨加上按鈕0 -->
+            <button @click="addNum(0)">0</button>
+            <br>
+            <!-- 從data的operators中列出加減乘除(@click中的function參數要填上operator以表示使用者選擇的符號) -->
+            <template v-for="operator in operators">
+                <button @click="operation(operator)">{{ operator }}</button>
+            </template>
+            <button @click="reset()">reset</button>
+            <button @click="equal()">=</button>
+        </div>
+    </div>
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    initValue: '0',
+                    operators: ['+', '-', '*', '/'], //計算符號以陣列型別放入，再利用迴圈讀出
+                    savedValue: 0, //用來記下使用者輸入的數字(不會顯示在畫面上)
+                    chooseOperator: '' //用來記下使用者選擇的計算符號
+                }
+            },
+            methods: {
+                addNum(value) {
+                    if (this.initValue === '0') {
+                        this.initValue = value; //當原本數字為0的時候，就讓值等同於使用者輸入的數字(1個字元)
+                    } else {
+                        this.initValue += value.toString(); //當數字不為0的時候就讓數字變成使用者輸入的數字並以字串合併(if裡面跑完之後就會有一個不為0的值，因此會再進來else)
+                    }
+                },
+                operation(operator) {
+                    this.savedValue = Number(this.initValue); //將使用者輸入的數字以數字型別儲存
+                    this.initValue = '0'; //當使用者點選計算符號時會切換成0
+                    this.chooseOperator = operator; //讓使用者點選的計算符號(operator)被記下來
+
+                    console.log(this.savedValue) //後台顯示使用者輸入的數字
+                    console.log(this.chooseOperator) //後台顯示使用者點選的計算符號
+                },
+                equal() {
+                    switch (this.chooseOperator) { //利用switch迴圈判斷四則運算個別的結果
+                        case '+':
+                            this.initValue = `${this.savedValue + Number(this.initValue)}`; //如果選擇的是+符號時，就將第一次記下來的使用者數字和第二次使用者輸入的數字(轉成數字型別)相加
+                            break;
+                        case '-': //若上面的+符號程式先寫好可以先測試程式是否可以運作，若ok的話後面就複製貼上稍作修改即可
+                            this.initValue = `${this.savedValue - Number(this.initValue)}`;
+                            break;
+                        case '*':
+                            this.initValue = `${this.savedValue * Number(this.initValue)}`;
+                            break;
+                        case '/':
+                            this.initValue = `${this.savedValue / Number(this.initValue)}`;
+                            break;
+                    }
+                },
+                reset() {
+                    this.initValue= '0'; //讓初始值回到0
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>
